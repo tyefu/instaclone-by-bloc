@@ -1,21 +1,22 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_app_instaclone/repositories/auth/auth_repository.dart';
-import 'package:flutter_app_instaclone/screens/login/cubit/login_cubit.dart';
-import 'package:flutter_app_instaclone/screens/signup/signup_screen.dart';
 import 'package:flutter_app_instaclone/widgets/error_dialog.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class LoginScreen extends StatelessWidget {
-  static const String routeName = '/login';
+import 'cubit/signup_cubit.dart';
+class SignupScreen extends StatelessWidget {
+  static const String routeName = '/signup';
 
   static Route route() {
-    return PageRouteBuilder(
-        settings: RouteSettings(name: routeName),
-        transitionDuration: const Duration(seconds: 0),
-        pageBuilder: (context, _, __) => BlocProvider<LoginCubit>(
-            create: (_) =>
-                LoginCubit(authRepository: context.read<AuthRepository>()),
-            child: LoginScreen()));
+    return MaterialPageRoute(
+      settings: const RouteSettings(name: routeName),
+      builder: (context) => BlocProvider<SignupCubit>(
+        create: (_) =>
+            SignupCubit(authRepository: context.read<AuthRepository>()),
+        child: SignupScreen(),
+      ),
+    );
   }
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -26,12 +27,13 @@ class LoginScreen extends StatelessWidget {
       onWillPop: () async => false,
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
-        child: BlocConsumer<LoginCubit, LoginState>(
+        child: BlocConsumer<SignupCubit, SignupState>(
           listener: (context, state) {
-            if (state.status == LoginStatus.error) {
+            if (state.status == SignupStatus.error) {
               showDialog(
                 context: context,
-                builder: (context) => ErrorDialog(content: state.failure.message),
+                builder: (context) =>  ErrorDialog(content: state.failure.message),
+
               );
             }
           },
@@ -52,64 +54,63 @@ class LoginScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(
+                            const Text(
                               'Instagram',
                               style: TextStyle(
-                                  fontSize: 28.0, fontWeight: FontWeight.bold),
+                                fontSize: 28.0,
+                                fontWeight: FontWeight.bold,
+                              ),
                               textAlign: TextAlign.center,
                             ),
-                            const SizedBox(
-                              height: 12.0,
+                            const SizedBox(height: 12.0),
+                            TextFormField(
+                              decoration: InputDecoration(hintText: 'Username'),
+                              onChanged: (value) => context
+                                  .read<SignupCubit>()
+                                  .usernameChanged(value),
+                              validator: (value) => value.trim().isEmpty
+                                  ? 'Please enter a valid username.'
+                                  : null,
                             ),
+                            const SizedBox(height: 16.0),
                             TextFormField(
                               decoration: InputDecoration(hintText: 'Email'),
                               onChanged: (value) => context
-                                  .read<LoginCubit>()
+                                  .read<SignupCubit>()
                                   .emailChanged(value),
                               validator: (value) => !value.contains('@')
-                                  ? 'Please enter a valid email'
+                                  ? 'Please enter a valid email.'
                                   : null,
                             ),
-                            const SizedBox(
-                              height: 12.0,
-                            ),
+                            const SizedBox(height: 16.0),
                             TextFormField(
-                              obscureText: true,
                               decoration: InputDecoration(hintText: 'Password'),
+                              obscureText: true,
                               onChanged: (value) => context
-                                  .read<LoginCubit>()
+                                  .read<SignupCubit>()
                                   .passwordChanged(value),
                               validator: (value) => value.length < 6
-                                  ? 'Must be at least 6 characters'
+                                  ? 'Must be at least 6 characters.'
                                   : null,
                             ),
-                            SizedBox(
-                              height: 28.0,
+                            const SizedBox(height: 28.0),
+                            RaisedButton(
+                              elevation: 1.0,
+                              color: Theme.of(context).primaryColor,
+                              textColor: Colors.white,
+                              onPressed: () => _submitForm(
+                                context,
+                                state.status == SignupStatus.submitting,
+                              ),
+                              child: const Text('Sign Up'),
                             ),
-                            ElevatedButton(
-                              onPressed: () => _submitForm(context,
-                                  state.status == LoginStatus.submitting),
-                              child: Text(
-                                'Login',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                primary: Theme.of(context).primaryColor,
-                              ),
-                            ),
-                            SizedBox(
-                              height: 12.0,
-                            ),
-                            ElevatedButton(
-                              onPressed: () => Navigator.of(context)
-                                  .pushNamed(SignupScreen.routeName),
-                              child: Text(
-                                'No account? Sign up',
-                                style: TextStyle(color: Colors.black),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                primary: Colors.grey[200],
-                              ),
+                            const SizedBox(height: 12.0),
+                            RaisedButton(
+                              elevation: 1.0,
+                              color: Colors.grey[200],
+                              textColor: Colors.black,
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('Back to Login'),
                             ),
                           ],
                         ),
@@ -126,10 +127,8 @@ class LoginScreen extends StatelessWidget {
   }
 
   void _submitForm(BuildContext context, bool isSubmitting) {
-    print('aaa');
     if (_formKey.currentState.validate() && !isSubmitting) {
-      print('bbb');
-      context.read<LoginCubit>().logInWithCredentials();
+      context.read<SignupCubit>().signUpWithCredentials();
     }
   }
 }

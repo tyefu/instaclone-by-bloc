@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app_instaclone/screens/login/login_screen.dart';
 import 'package:flutter_app_instaclone/screens/nav/nav_screen.dart';
+import 'package:flutter_app_instaclone/screens/signup/signup_screen.dart';
 import 'package:flutter_app_instaclone/screens/splash_screen.dart';
 
 class CustomRouter{
@@ -17,6 +18,8 @@ class CustomRouter{
         return LoginScreen.route();
       case NavScreen.routeName:
         return NavScreen.route();
+      case SignupScreen.routeName:
+        return SignupScreen.route();
       default:
         return _errorRoute();
     }
