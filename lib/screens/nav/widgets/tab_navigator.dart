@@ -33,7 +33,7 @@ class TabNavigator extends StatelessWidget {
               builder: (context) => routeBuilders[initialRoute](context)),
         ];
       },
-      onGenerateRoute: CustomRouter.onGenerateRoute,
+      onGenerateRoute: CustomRouter.onGenerateNestedRoute,
     );
   }
 

@@ -6,6 +6,7 @@ import 'package:flutter_app_instaclone/bloc/auth/auth_bloc.dart';
 import 'package:flutter_app_instaclone/bloc/simple_bloc_observer.dart';
 import 'package:flutter_app_instaclone/config/custom_router.dart';
 import 'package:flutter_app_instaclone/repositories/auth/auth_repository.dart';
+import 'package:flutter_app_instaclone/repositories/storage/storage_repository.dart';
 import 'package:flutter_app_instaclone/repositories/user/user_repository.dart';
 import 'package:flutter_app_instaclone/screens/splash_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,7 +32,12 @@ class MyApp extends StatelessWidget {
         ),
         RepositoryProvider<UserRepository>(
           create: (_) => UserRepository(),
-        )
+        ),
+        RepositoryProvider<StorageRepository>(
+          create: (_) => StorageRepository(),
+        ),
+
+
       ],
       child: MultiBlocProvider(
         providers: [
