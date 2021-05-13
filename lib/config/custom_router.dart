@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app_instaclone/screens/edit_profile/edit_profile_screen.dart';
 import 'package:flutter_app_instaclone/screens/login/login_screen.dart';
 import 'package:flutter_app_instaclone/screens/nav/nav_screen.dart';
+import 'package:flutter_app_instaclone/screens/profile/profile_screen.dart';
 import 'package:flutter_app_instaclone/screens/signup/signup_screen.dart';
 import 'package:flutter_app_instaclone/screens/splash_screen.dart';
 
@@ -28,6 +29,8 @@ class CustomRouter{
   static Route onGenerateNestedRoute(RouteSettings settings){
     print('Nested Route: ${settings.name}');
     switch(settings.name){
+      case ProfileScreen.routeName:
+        return ProfileScreen.route(args: settings.arguments);
 
       case EditProfileScreen.routeName:
         return EditProfileScreen.route(args: settings.arguments);

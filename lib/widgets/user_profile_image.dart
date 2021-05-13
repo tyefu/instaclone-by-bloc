@@ -12,7 +12,7 @@ class UserProfileImage extends StatelessWidget {
       {Key key,
       @required this.radius,
       @required this.profileImageUrl,
-      @required this.profileImage})
+       this.profileImage})
       : super(key: key);
 
   @override

@@ -65,7 +65,8 @@ Widget _getScreen(BuildContext context, BottomNavItem item) {
       return BlocProvider<ProfileBloc>(
           create: (_) => ProfileBloc(
               userRepository: context.read<UserRepository>(),
-              authBloc: context.read<AuthBloc>())
+              authBloc: context.read<AuthBloc>(),
+              postRepository: context.read<PostRepository>())
             ..add(ProfileLoadUser(
                 userId: context.read<AuthBloc>().state.user.uid)),
           child: ProfileScreen());
