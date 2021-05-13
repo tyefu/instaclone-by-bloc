@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app_instaclone/bloc/auth/auth_bloc.dart';
 import 'package:flutter_app_instaclone/config/custom_router.dart';
 import 'package:flutter_app_instaclone/enums/bottom_nav_item.dart';
+import 'package:flutter_app_instaclone/repositories/post/post_repository.dart';
+import 'package:flutter_app_instaclone/repositories/storage/storage_repository.dart';
 import 'package:flutter_app_instaclone/repositories/user/user_repository.dart';
 import 'package:flutter_app_instaclone/screens/create_post/create_post_screen.dart';
+import 'package:flutter_app_instaclone/screens/create_post/cubit/create_post_cubit.dart';
 import 'package:flutter_app_instaclone/screens/feed/feed_screen.dart';
 import 'package:flutter_app_instaclone/screens/notification/notification_screen.dart';
 import 'package:flutter_app_instaclone/screens/profile/bloc/profile_bloc.dart';
@@ -49,7 +52,13 @@ Widget _getScreen(BuildContext context, BottomNavItem item) {
     case BottomNavItem.search:
       return SearchScreen();
     case BottomNavItem.create:
-      return CreatePostScreen();
+      return BlocProvider<CreatePostCubit>(
+          create: (context) => CreatePostCubit(
+                postRepository: context.read<PostRepository>(),
+                storageRepository: context.read<StorageRepository>(),
+                authBloc: context.read<AuthBloc>(),
+              ),
+          child: CreatePostScreen());
     case BottomNavItem.notification:
       return NotificationScreen();
     case BottomNavItem.profile:
