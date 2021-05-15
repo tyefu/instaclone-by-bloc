@@ -37,3 +37,7 @@ class ProfileUpdatePosts extends ProfileEvent{
 
 }
 
+class ProfileFollowUser extends ProfileEvent{}
+
+class ProfileUnfollowUser extends ProfileEvent{}
+

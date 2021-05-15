@@ -11,6 +11,7 @@ import 'package:flutter_app_instaclone/screens/feed/feed_screen.dart';
 import 'package:flutter_app_instaclone/screens/notification/notification_screen.dart';
 import 'package:flutter_app_instaclone/screens/profile/bloc/profile_bloc.dart';
 import 'package:flutter_app_instaclone/screens/profile/profile_screen.dart';
+import 'package:flutter_app_instaclone/screens/search/cubit/search_cubit.dart';
 import 'package:flutter_app_instaclone/screens/search/search_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -50,7 +51,10 @@ Widget _getScreen(BuildContext context, BottomNavItem item) {
     case BottomNavItem.feed:
       return FeedScreen();
     case BottomNavItem.search:
-      return SearchScreen();
+      return BlocProvider<SearchCubit>(
+          create: (context) =>
+              SearchCubit(userRepository: context.read<UserRepository>()),
+          child: SearchScreen());
     case BottomNavItem.create:
       return BlocProvider<CreatePostCubit>(
           create: (context) => CreatePostCubit(
