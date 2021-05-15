@@ -31,10 +31,13 @@ class PostRepository extends BasePostRepository {
   @override
   Stream<List<Future<Comment>>> getPostComments({@required String postId}) {
     return _firebaseFirestore
-        .collection(Paths.comments).doc(postId).collection(Paths.postComments)
+        .collection(Paths.comments)
+        .doc(postId)
+        .collection(Paths.postComments)
         .orderBy('date', descending: true)
         .snapshots()
-        .map((snap) => snap.docs.map((doc) => Comment.fromDocument(doc)).toList());
+        .map((snap) =>
+            snap.docs.map((doc) => Comment.fromDocument(doc)).toList());
   }
 
   @override
@@ -46,5 +49,42 @@ class PostRepository extends BasePostRepository {
         .orderBy('date', descending: true)
         .snapshots()
         .map((snap) => snap.docs.map((doc) => Post.fromDocument(doc)).toList());
+  }
+
+  @override
+  Future<List<Post>> getUserFeed(
+      {@required String userId, String lastPostId}) async {
+    QuerySnapshot postsSnap;
+    if (lastPostId == null) {
+          postsSnap = await _firebaseFirestore
+          .collection(Paths.feeds)
+          .doc(userId)
+          .collection(Paths.userFeed)
+          .orderBy('date', descending: true)
+          .limit(3)
+          .get();
+    } else {
+      final lastPostDoc = await _firebaseFirestore
+          .collection(Paths.feeds)
+          .doc(userId)
+          .collection(Paths.userFeed)
+          .doc(lastPostId)
+          .get();
+      if (!lastPostDoc.exists) {
+        return [];
+      }
+      postsSnap = await _firebaseFirestore
+          .collection(Paths.feeds)
+          .doc(userId)
+          .collection(Paths.userFeed)
+          .orderBy('date', descending: true)
+          .startAfterDocument(lastPostDoc)
+          .limit(3)
+          .get();
+    }
+
+    final posts = Future.wait(
+        postsSnap.docs.map((doc) => Post.fromDocument(doc)).toList());
+    return posts;
   }
 }

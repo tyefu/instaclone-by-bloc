@@ -31,7 +31,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   @override
   Future<void> close() {
-    _postsSubscription.cancel();
+    _postsSubscription?.cancel();
     return super.close();
   }
 

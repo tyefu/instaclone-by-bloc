@@ -7,6 +7,7 @@ import 'package:flutter_app_instaclone/repositories/storage/storage_repository.d
 import 'package:flutter_app_instaclone/repositories/user/user_repository.dart';
 import 'package:flutter_app_instaclone/screens/create_post/create_post_screen.dart';
 import 'package:flutter_app_instaclone/screens/create_post/cubit/create_post_cubit.dart';
+import 'package:flutter_app_instaclone/screens/feed/bloc/feed_bloc.dart';
 import 'package:flutter_app_instaclone/screens/feed/feed_screen.dart';
 import 'package:flutter_app_instaclone/screens/notification/notification_screen.dart';
 import 'package:flutter_app_instaclone/screens/profile/bloc/profile_bloc.dart';
@@ -49,7 +50,11 @@ class TabNavigator extends StatelessWidget {
 Widget _getScreen(BuildContext context, BottomNavItem item) {
   switch (item) {
     case BottomNavItem.feed:
-      return FeedScreen();
+      return BlocProvider<FeedBloc>(
+          create: (context) => FeedBloc(
+              postRepository: context.read<PostRepository>(),
+              authBloc: context.read<AuthBloc>(),)..add(FeedFetchPosts()),
+          child: FeedScreen());
     case BottomNavItem.search:
       return BlocProvider<SearchCubit>(
           create: (context) =>
