@@ -85,7 +85,7 @@ class _ProfileScreenState extends State<ProfileScreen>
 
   Widget _buildBody(ProfileState state) {
     switch (state.status) {
-      case ProfileStatus.loaded:
+      case ProfileStatus.loading:
         return Center(
           child: CircularProgressIndicator(),
         );

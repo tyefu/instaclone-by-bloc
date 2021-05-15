@@ -49,7 +49,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
   Stream<ProfileState> _mapProfileLoadUserToState(
       ProfileLoadUser event) async* {
-    yield state.copyWith(status: ProfileStatus.loaded);
+    yield state.copyWith(status: ProfileStatus.loading);
     try {
       final user = await _userRepository.getUserWithId(userId: event.userId);
       final isCurrentUser = _authBloc.state.user.uid == event.userId;

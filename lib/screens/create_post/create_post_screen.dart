@@ -113,7 +113,7 @@ class CreatePostScreen extends StatelessWidget {
     final pickedFile = await ImageHelper.pickImageFromGallery(
         context: context, cropStyle: CropStyle.rectangle, title: 'Create Post');
     if (pickedFile != null) {
-      context.read<EditProfileCubit>().profileImageChanged(pickedFile);
+      context.read<CreatePostCubit>().postImageChanged(pickedFile);
     }
   }
 

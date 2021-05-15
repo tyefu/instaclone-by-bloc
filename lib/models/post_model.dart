@@ -73,8 +73,8 @@ class Post extends Equatable {
           author: User.fromDocument(authorDoc),
           imageUrl: data['imageUrl'] ?? '',
           caption: data['caption'] ?? '',
-          likes: (data['likes'] ?? 0).toint(),
-          date: (data['data'] as Timestamp)?.toDate(),
+          likes: data['likes'] ?? 0,
+          date: (data['date'] as Timestamp)?.toDate(),
       );
     }
     return null;
