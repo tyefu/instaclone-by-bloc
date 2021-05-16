@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_app_instaclone/config/paths.dart';
+import 'package:flutter_app_instaclone/enums/notif_type.dart';
+import 'package:flutter_app_instaclone/models/notif_model.dart';
 import 'package:flutter_app_instaclone/models/user_model.dart';
 import 'package:flutter_app_instaclone/repositories/user/base_user_repositiory.dart';
 
@@ -49,7 +51,18 @@ class UserRepository extends BaseUserRepository {
         .collection(Paths.userFollowers)
         .doc(userId)
         .set({});
+
+    final notification = Notif(
+        type: NotifType.follow,
+        fromUser: User.empty.copyWith(id: userId),
+        date: DateTime.now());
+    _firebaseFirestore
+        .collection(Paths.notifications)
+        .doc(followUserId)
+        .collection(Paths.userNotifications)
+        .add(notification.toDocument());
   }
+
 
   @override
   Future<bool> isFollowing(

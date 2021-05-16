@@ -7,6 +7,7 @@ import 'package:flutter_app_instaclone/bloc/simple_bloc_observer.dart';
 import 'package:flutter_app_instaclone/config/custom_router.dart';
 import 'package:flutter_app_instaclone/cubits/liked_posts/liked_posts_cubit.dart';
 import 'package:flutter_app_instaclone/repositories/auth/auth_repository.dart';
+import 'package:flutter_app_instaclone/repositories/notification/notification_repository.dart';
 import 'package:flutter_app_instaclone/repositories/post/post_repository.dart';
 import 'package:flutter_app_instaclone/repositories/storage/storage_repository.dart';
 import 'package:flutter_app_instaclone/repositories/user/user_repository.dart';
@@ -40,6 +41,9 @@ class MyApp extends StatelessWidget {
         ),
         RepositoryProvider<PostRepository>(
           create: (_) => PostRepository(),
+        ),
+        RepositoryProvider<NotificationRepository>(
+          create: (_) => NotificationRepository(),
         ),
 
 

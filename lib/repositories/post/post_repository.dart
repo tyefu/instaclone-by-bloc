@@ -4,8 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_app_instaclone/config/paths.dart';
+import 'package:flutter_app_instaclone/enums/notif_type.dart';
 import 'package:flutter_app_instaclone/models/comment_model.dart';
+import 'package:flutter_app_instaclone/models/notif_model.dart';
 import 'package:flutter_app_instaclone/models/post_model.dart';
+import 'package:flutter_app_instaclone/models/user_model.dart';
 import 'package:flutter_app_instaclone/repositories/post/base_post_repotitory.dart';
 
 class PostRepository extends BasePostRepository {
@@ -15,12 +18,24 @@ class PostRepository extends BasePostRepository {
       : _firebaseFirestore = firebaseFirestore ?? FirebaseFirestore.instance;
 
   @override
-  Future<void> createComment({@required Comment comment}) async {
+  Future<void> createComment(
+      {@required Post post, @required Comment comment}) async {
     await _firebaseFirestore
         .collection(Paths.comments)
         .doc(comment.postId)
         .collection(Paths.postComments)
         .add(comment.toDocument());
+
+    final notification = Notif(
+        type: NotifType.comment,
+        fromUser: comment.author,
+        post: post,
+        date: DateTime.now());
+    _firebaseFirestore
+        .collection(Paths.notifications)
+        .doc(post.author.id)
+        .collection(Paths.userNotifications)
+        .add(notification.toDocument());
   }
 
   @override
@@ -100,6 +115,16 @@ class PostRepository extends BasePostRepository {
         .collection(Paths.postLikes)
         .doc(userId)
         .set({});
+    final notification = Notif(
+        type: NotifType.like,
+        fromUser: User.empty.copyWith(id: userId),
+        post: post,
+        date: DateTime.now());
+    _firebaseFirestore
+        .collection(Paths.notifications)
+        .doc(post.author.id)
+        .collection(Paths.userNotifications)
+        .add(notification.toDocument());
   }
 
   @override

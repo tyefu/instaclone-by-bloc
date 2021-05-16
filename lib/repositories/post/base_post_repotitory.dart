@@ -3,7 +3,7 @@ import 'package:flutter_app_instaclone/models/post_model.dart';
 
 abstract class BasePostRepository{
   Future<void> createPost({Post post});
-  Future<void> createComment({Comment comment});
+  Future<void> createComment({Post post,Comment comment});
   void createLike({Post post,String userId});
   Stream<List<Future<Post>>> getUserPosts({String userId});
   Stream<List<Future<Comment>>> getPostComments({String postId});

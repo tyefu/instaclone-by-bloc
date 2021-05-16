@@ -3,6 +3,7 @@ import 'package:flutter_app_instaclone/bloc/auth/auth_bloc.dart';
 import 'package:flutter_app_instaclone/config/custom_router.dart';
 import 'package:flutter_app_instaclone/cubits/liked_posts/liked_posts_cubit.dart';
 import 'package:flutter_app_instaclone/enums/bottom_nav_item.dart';
+import 'package:flutter_app_instaclone/repositories/notification/notification_repository.dart';
 import 'package:flutter_app_instaclone/repositories/post/post_repository.dart';
 import 'package:flutter_app_instaclone/repositories/storage/storage_repository.dart';
 import 'package:flutter_app_instaclone/repositories/user/user_repository.dart';
@@ -10,6 +11,7 @@ import 'package:flutter_app_instaclone/screens/create_post/create_post_screen.da
 import 'package:flutter_app_instaclone/screens/create_post/cubit/create_post_cubit.dart';
 import 'package:flutter_app_instaclone/screens/feed/bloc/feed_bloc.dart';
 import 'package:flutter_app_instaclone/screens/feed/feed_screen.dart';
+import 'package:flutter_app_instaclone/screens/notification/bloc/notifications_bloc.dart';
 import 'package:flutter_app_instaclone/screens/notification/notification_screen.dart';
 import 'package:flutter_app_instaclone/screens/profile/bloc/profile_bloc.dart';
 import 'package:flutter_app_instaclone/screens/profile/profile_screen.dart';
@@ -65,14 +67,21 @@ Widget _getScreen(BuildContext context, BottomNavItem item) {
           child: SearchScreen());
     case BottomNavItem.create:
       return BlocProvider<CreatePostCubit>(
-          create: (context) => CreatePostCubit(
-                postRepository: context.read<PostRepository>(),
-                storageRepository: context.read<StorageRepository>(),
-                authBloc: context.read<AuthBloc>(),
-              ),
-          child: CreatePostScreen());
+        create: (context) => CreatePostCubit(
+          postRepository: context.read<PostRepository>(),
+          storageRepository: context.read<StorageRepository>(),
+          authBloc: context.read<AuthBloc>(),
+        ),
+        child: CreatePostScreen(),
+      );
     case BottomNavItem.notification:
-      return NotificationScreen();
+      return BlocProvider<NotificationsBloc>(
+        create: (context) => NotificationsBloc(
+          notificationRepository: context.read<NotificationRepository>(),
+          authBloc: context.read<AuthBloc>(),
+        ),
+        child: NotificationScreen(),
+      );
     case BottomNavItem.profile:
       return BlocProvider<ProfileBloc>(
           create: (_) => ProfileBloc(
