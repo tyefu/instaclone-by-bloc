@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app_instaclone/bloc/auth/auth_bloc.dart';
 import 'package:flutter_app_instaclone/bloc/simple_bloc_observer.dart';
 import 'package:flutter_app_instaclone/config/custom_router.dart';
+import 'package:flutter_app_instaclone/cubits/liked_posts/liked_posts_cubit.dart';
 import 'package:flutter_app_instaclone/repositories/auth/auth_repository.dart';
 import 'package:flutter_app_instaclone/repositories/post/post_repository.dart';
 import 'package:flutter_app_instaclone/repositories/storage/storage_repository.dart';
@@ -49,20 +50,26 @@ class MyApp extends StatelessWidget {
             create: (context) =>
                 AuthBloc(authRepository: context.read<AuthRepository>()),
           ),
+          BlocProvider<LikedPostsCubit>(
+            create: (context) =>
+                LikedPostsCubit(postRepository: context.read<PostRepository>(),
+                    authBloc: context.read<AuthBloc>()),
+          ),
+
         ],
         child: MaterialApp(
           title: 'Flutter Demo',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
-              // This is the theme of your application.
-              //
-              // Try running your application with "flutter run". You'll see the
-              // application has a blue toolbar. Then, without quitting the app, try
-              // changing the primarySwatch below to Colors.green and then invoke
-              // "hot reload" (press "r" in the console where you ran "flutter run",
-              // or simply save your changes to "hot reload" in a Flutter IDE).
-              // Notice that the counter didn't reset back to zero; the application
-              // is not restarted.
+            // This is the theme of your application.
+            //
+            // Try running your application with "flutter run". You'll see the
+            // application has a blue toolbar. Then, without quitting the app, try
+            // changing the primarySwatch below to Colors.green and then invoke
+            // "hot reload" (press "r" in the console where you ran "flutter run",
+            // or simply save your changes to "hot reload" in a Flutter IDE).
+            // Notice that the counter didn't reset back to zero; the application
+            // is not restarted.
               primarySwatch: Colors.blue,
               scaffoldBackgroundColor: Colors.grey[50],
               appBarTheme: AppBarTheme(
@@ -78,8 +85,10 @@ class MyApp extends StatelessWidget {
               visualDensity: VisualDensity.adaptivePlatformDensity),
           onGenerateRoute: CustomRouter.onGenerateRoute,
           initialRoute: SplashScreen.routeName,
-        ),
-      ),
+        )
+        ,
+      )
+      ,
     );
   }
 }

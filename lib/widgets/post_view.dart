@@ -1,14 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_instaclone/models/post_model.dart';
+import 'package:flutter_app_instaclone/screens/comments/comments_screen.dart';
 import 'package:flutter_app_instaclone/screens/profile/profile_screen.dart';
 import 'package:flutter_app_instaclone/widgets/user_profile_image.dart';
 import 'package:flutter_app_instaclone/extensions/datetime_extension.dart';
 class PostView extends StatelessWidget {
   final Post post;
   final bool isLiked;
+  final VoidCallback onLike;
+  final bool recentlyLiked;
 
-  const PostView({Key key, @required this.post, @required this.isLiked})
+  const PostView({Key key, @required this.post, @required this.isLiked,@required this.onLike, this.recentlyLiked = false})
       : super(key: key);
 
   @override
@@ -43,7 +46,7 @@ class PostView extends StatelessWidget {
           ),
         ),
         GestureDetector(
-          onDoubleTap: () {},
+          onDoubleTap: onLike,
           child: CachedNetworkImage(
             imageUrl: post.imageUrl,
             fit: BoxFit.cover,
@@ -54,7 +57,7 @@ class PostView extends StatelessWidget {
         Row(
           children: [
             IconButton(
-                onPressed: () {},
+                onPressed: onLike,
                 icon: isLiked
                     ? const Icon(
                         Icons.favorite,
@@ -62,7 +65,10 @@ class PostView extends StatelessWidget {
                       )
                     : const Icon(Icons.favorite_outline)),
             IconButton(
-                onPressed: () {}, icon: const Icon(Icons.comment_outlined)),
+                onPressed: () => Navigator.of(context).pushNamed(
+                    CommentsScreen.routeName,
+                    arguments: CommentsScreenArgs(post: post)),
+                icon: const Icon(Icons.comment_outlined)),
           ],
         ),
         Padding(
@@ -71,7 +77,7 @@ class PostView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                '${post.likes} likes',
+                '${recentlyLiked ? post.likes + 1 : post.likes} likes',
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
               const SizedBox(

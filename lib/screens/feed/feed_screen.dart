@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app_instaclone/cubits/liked_posts/liked_posts_cubit.dart';
 import 'package:flutter_app_instaclone/screens/feed/bloc/feed_bloc.dart';
 import 'package:flutter_app_instaclone/widgets/error_dialog.dart';
 import 'package:flutter_app_instaclone/widgets/post_view.dart';
@@ -12,7 +13,6 @@ class FeedScreen extends StatefulWidget {
 }
 
 class _FeedScreenState extends State<FeedScreen> {
-
   ScrollController _scrollController;
 
   @override
@@ -21,11 +21,9 @@ class _FeedScreenState extends State<FeedScreen> {
     _scrollController = ScrollController()
       ..addListener(() {
         if (_scrollController.offset >=
-            _scrollController.position.maxScrollExtent &&
-            !_scrollController.position.outOfRange && context
-            .read<FeedBloc>()
-            .state
-            .status != FeedStatus.pagination) {
+                _scrollController.position.maxScrollExtent &&
+            !_scrollController.position.outOfRange &&
+            context.read<FeedBloc>().state.status != FeedStatus.pagination) {
           context.read<FeedBloc>().add(FeedPaginatePosts());
         }
       });
@@ -48,7 +46,7 @@ class _FeedScreenState extends State<FeedScreen> {
               context: context,
               builder: (context) =>
                   ErrorDialog(content: state.failure.message));
-        }else if(state.status == FeedStatus.pagination){
+        } else if (state.status == FeedStatus.pagination) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
             backgroundColor: Theme.of(context).primaryColor,
             duration: const Duration(seconds: 1),
@@ -87,11 +85,27 @@ class _FeedScreenState extends State<FeedScreen> {
             return true;
           },
           child: ListView.builder(
-            controller: _scrollController,
+              controller: _scrollController,
               itemCount: state.posts.length,
               itemBuilder: (BuildContext context, int index) {
                 final post = state.posts[index];
-                return PostView(post: post, isLiked: false);
+                final likedPostsState = context.watch<LikedPostsCubit>().state;
+                final isLiked = likedPostsState.likedPostIds.contains(post.id);
+                final recentlyLiked =
+                    likedPostsState.recentlyLikedPostIds.contains(post.id);
+
+                return PostView(
+                  post: post,
+                  isLiked: isLiked,
+                  onLike: () {
+                    if (isLiked) {
+                      context.read<LikedPostsCubit>().unlikePost(post: post);
+                    } else {
+                      context.read<LikedPostsCubit>().likePost(post: post);
+                    }
+                  },
+                  recentlyLiked: recentlyLiked,
+                );
               }),
         );
     }

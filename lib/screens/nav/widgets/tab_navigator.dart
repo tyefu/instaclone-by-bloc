@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app_instaclone/bloc/auth/auth_bloc.dart';
 import 'package:flutter_app_instaclone/config/custom_router.dart';
+import 'package:flutter_app_instaclone/cubits/liked_posts/liked_posts_cubit.dart';
 import 'package:flutter_app_instaclone/enums/bottom_nav_item.dart';
 import 'package:flutter_app_instaclone/repositories/post/post_repository.dart';
 import 'package:flutter_app_instaclone/repositories/storage/storage_repository.dart';
@@ -52,8 +53,10 @@ Widget _getScreen(BuildContext context, BottomNavItem item) {
     case BottomNavItem.feed:
       return BlocProvider<FeedBloc>(
           create: (context) => FeedBloc(
-              postRepository: context.read<PostRepository>(),
-              authBloc: context.read<AuthBloc>(),)..add(FeedFetchPosts()),
+                postRepository: context.read<PostRepository>(),
+                authBloc: context.read<AuthBloc>(),
+                likedPostsCubit: context.read<LikedPostsCubit>(),
+              )..add(FeedFetchPosts()),
           child: FeedScreen());
     case BottomNavItem.search:
       return BlocProvider<SearchCubit>(
@@ -73,11 +76,12 @@ Widget _getScreen(BuildContext context, BottomNavItem item) {
     case BottomNavItem.profile:
       return BlocProvider<ProfileBloc>(
           create: (_) => ProfileBloc(
-              userRepository: context.read<UserRepository>(),
-              authBloc: context.read<AuthBloc>(),
-              postRepository: context.read<PostRepository>())
-            ..add(ProfileLoadUser(
-                userId: context.read<AuthBloc>().state.user.uid)),
+                userRepository: context.read<UserRepository>(),
+                authBloc: context.read<AuthBloc>(),
+                postRepository: context.read<PostRepository>(),
+                likedPostsCubit: context.read<LikedPostsCubit>(),
+              )..add(ProfileLoadUser(
+                  userId: context.read<AuthBloc>().state.user.uid)),
           child: ProfileScreen());
     default:
       return Scaffold();

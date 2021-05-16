@@ -1,8 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_instaclone/bloc/auth/auth_bloc.dart';
+import 'package:flutter_app_instaclone/cubits/liked_posts/liked_posts_cubit.dart';
 import 'package:flutter_app_instaclone/repositories/post/post_repository.dart';
 import 'package:flutter_app_instaclone/repositories/user/user_repository.dart';
+import 'package:flutter_app_instaclone/screens/comments/comments_screen.dart';
 import 'package:flutter_app_instaclone/screens/profile/bloc/profile_bloc.dart';
 import 'package:flutter_app_instaclone/screens/profile/widgets/profile_info.dart';
 import 'package:flutter_app_instaclone/screens/profile/widgets/profile_stats.dart';
@@ -28,6 +30,7 @@ class ProfileScreen extends StatefulWidget {
                 userRepository: context.read<UserRepository>(),
                 postRepository: context.read<PostRepository>(),
                 authBloc: context.read<AuthBloc>(),
+                likedPostsCubit: context.read<LikedPostsCubit>(),
               )..add(ProfileLoadUser(userId: args.userId)),
               child: ProfileScreen(),
             ));
@@ -73,8 +76,10 @@ class _ProfileScreenState extends State<ProfileScreen>
               actions: [
                 if (state.isCurrentUser)
                   IconButton(
-                      onPressed: () =>
-                          context.read<AuthBloc>().add(AuthLogoutRequested()),
+                      onPressed: () {
+                        context.read<AuthBloc>().add(AuthLogoutRequested());
+                        context.read<LikedPostsCubit>().clearAllLikedPosts();
+                      },
                       icon: Icon(Icons.exit_to_app))
               ],
             ),
@@ -167,7 +172,9 @@ class _ProfileScreenState extends State<ProfileScreen>
                       delegate: SliverChildBuilderDelegate((context, index) {
                         final post = state.posts[index];
                         return GestureDetector(
-                          onTap: () {},
+                          onTap: () => Navigator.of(context).pushNamed(
+                              CommentsScreen.routeName,
+                              arguments: CommentsScreenArgs(post: post)),
                           child: CachedNetworkImage(
                             imageUrl: post.imageUrl,
                             fit: BoxFit.cover,
@@ -178,7 +185,29 @@ class _ProfileScreenState extends State<ProfileScreen>
                   : SliverList(
                       delegate: SliverChildBuilderDelegate((context, index) {
                         final post = state.posts[index];
-                        return PostView(post: post, isLiked: false,);
+                        final likedPostsState =
+                            context.watch<LikedPostsCubit>().state;
+                        final isLiked =
+                            likedPostsState.likedPostIds.contains(post.id);
+                        final recentlyLiked = likedPostsState
+                            .recentlyLikedPostIds
+                            .contains(post.id);
+
+                        return PostView(
+                          post: post,
+                          isLiked: isLiked,
+                          onLike: () {
+                            if (isLiked) {
+                              context
+                                  .read<LikedPostsCubit>()
+                                  .unlikePost(post: post);
+                            } else {
+                              context
+                                  .read<LikedPostsCubit>()
+                                  .likePost(post: post);
+                            }
+                          },
+                        );
                       }, childCount: state.posts.length),
                     )
             ],

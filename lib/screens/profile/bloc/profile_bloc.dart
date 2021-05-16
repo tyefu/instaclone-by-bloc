@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_app_instaclone/bloc/auth/auth_bloc.dart';
+import 'package:flutter_app_instaclone/cubits/liked_posts/liked_posts_cubit.dart';
 import 'package:flutter_app_instaclone/models/failure_model.dart';
 import 'package:flutter_app_instaclone/models/post_model.dart';
 import 'package:flutter_app_instaclone/repositories/post/post_repository.dart';
@@ -18,15 +19,18 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final UserRepository _userRepository;
   final PostRepository _postRepository;
   final AuthBloc _authBloc;
+  final LikedPostsCubit _likedPostsCubit;
   StreamSubscription<List<Future<Post>>> _postsSubscription;
 
-  ProfileBloc(
-      {@required UserRepository userRepository,
-      @required PostRepository postRepository,
-      @required AuthBloc authBloc})
-      : _userRepository = userRepository,
+  ProfileBloc({
+    @required UserRepository userRepository,
+    @required PostRepository postRepository,
+    @required AuthBloc authBloc,
+    @required LikedPostsCubit likedPostsCubit,
+  })  : _userRepository = userRepository,
         _postRepository = postRepository,
         _authBloc = authBloc,
+        _likedPostsCubit = likedPostsCubit,
         super(ProfileState.initial());
 
   @override
@@ -87,14 +91,18 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   Stream<ProfileState> _mapProfileUpdatePostsToState(
       ProfileUpdatePosts event) async* {
     yield state.copyWith(posts: event.posts);
+    final likedPostIds = await _postRepository.getLikedPostIds(
+        userId: _authBloc.state.user.uid, posts: event.posts);
+    _likedPostsCubit.updateLikedPosts(postIds: likedPostIds);
   }
 
   Stream<ProfileState> _mapProfileFollowUserToState() async* {
     try {
       _userRepository.followUser(
           userId: _authBloc.state.user.uid, followUserId: state.user.id);
-      final updateUser = state.user.copyWith(followers: state.user.followers + 1);
-      yield state.copyWith(user: updateUser,isFollowing: true);
+      final updateUser =
+          state.user.copyWith(followers: state.user.followers + 1);
+      yield state.copyWith(user: updateUser, isFollowing: true);
     } catch (err) {
       yield state.copyWith(
           status: ProfileStatus.error,
@@ -103,12 +111,13 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     }
   }
 
-  Stream<ProfileState> _mapProfileUnFollowUserToState()async* {
+  Stream<ProfileState> _mapProfileUnFollowUserToState() async* {
     try {
       _userRepository.unfollowUser(
           userId: _authBloc.state.user.uid, unfollowUserId: state.user.id);
-      final updateUser = state.user.copyWith(followers: state.user.followers - 1);
-      yield state.copyWith(user: updateUser,isFollowing: false);
+      final updateUser =
+          state.user.copyWith(followers: state.user.followers - 1);
+      yield state.copyWith(user: updateUser, isFollowing: false);
     } catch (err) {
       yield state.copyWith(
           status: ProfileStatus.error,
